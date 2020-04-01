@@ -6,7 +6,8 @@
         <title>Interactive Map COVID-19 with Leaftleft</title>
         <style>
             #mapid {
-                height: 700px;
+                width: 99vw;
+                height: 97vh;
             }
         </style>
     </head>
@@ -15,35 +16,42 @@
 
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
-
-        <!-- <link rel="stylesheet" href="js/leaflet/leaflet.css" />
-        <script src="js/leaflet/leaflet.js"></script> -->
-
         <script>
-            // var map = L.map("mapid", {
-            //     // center: [51.505, -0.09],
-            //     center: [0, 0],
-            //     zoom: 3
-            // });
-            var map = L.map("mapid").setView([51.505, -0.09], 13);
+            var myMap = L.map("mapid").setView([0, 0], 3);
 
-            // L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            // }).addTo(map);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(myMap);
 
             // L.marker([51.5, -0.09])
-            //     .addTo(map)
+            //     .addTo(mymap)
             //     .bindPopup("A pretty CSS3 popup.<br> Easily customizable.")
             //     .openPopup();
 
-            // async function asyncGetData() {
-            //     const data = await fetch("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest");
-            //     const result = await data.json();
-            //     console.log(result);
-            //     return result;
-            // }
+            async function asyncGetData() {
+                const data = await fetch("https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest");
+                const result = await data.json();
+                return result;
+            }
 
-            // asyncGetData();
+            async function asyncRenderData() {
+                const data = await asyncGetData();
+                console.log(data[0]);
+                data.forEach(element => {
+                    let country =
+                        element.provincestate === ""
+                            ? element.countryregion
+                            : `${element.provincestate} (${element.countryregion})`;
+                    L.marker([element.location.lat, element.location.lng]).addTo(myMap).bindPopup(`
+                        <strong>${country}</strong>
+                        <p style="color:orange;">Confirmados: <strong>${element.confirmed}</strong><p>
+                        <p style="color:red;">Fallecidos: <strong>${element.deaths}</strong><p>
+                        <p style="color:green;">Recuperados: <strong>${element.recovered}</strong><p>
+                        `);
+                });
+            }
+
+            asyncRenderData();
         </script>
     </body>
 </html>
