@@ -36,7 +36,6 @@
 
             async function asyncRenderData() {
                 const data = await asyncGetData();
-                console.log(data[0]);
                 data.forEach(element => {
                     let country =
                         element.provincestate === ""
